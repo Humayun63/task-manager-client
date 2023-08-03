@@ -1,3 +1,7 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+
+.new-task{
+  @apply border w-11/12 md:w-3/12 rounded-md px-4 text-center py-8 my-4 text-xl md:text-2xl font-medium shadow-lg cursor-pointer mx-auto
+}
