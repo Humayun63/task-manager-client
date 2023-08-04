@@ -1,8 +1,17 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import { FaPlusCircle } from 'react-icons/fa';
 import Swal from 'sweetalert2'
+import SingleTask from './components/SingleTask';
 
 const App = () => {
+  const [allTasks, setAllTasks] = useState([])
+
+  useEffect(() => {
+    fetch('https://task-manager-server-murex.vercel.app/all-tasks')
+      .then(res => res.json())
+      .then(data => setAllTasks(data))
+      .catch(error => console.log(error))
+  }, [])
 
   const handleSubmit = event => {
     window.my_modal_1.close()
@@ -12,20 +21,21 @@ const App = () => {
     const description = form.description.value;
     const status = form.status.value;
 
-    const newStatus = { title, description, status }
+    const newTask = { title, description, status }
 
     fetch('https://task-manager-server-murex.vercel.app/tasks/new', {
       method: 'POST',
       headers: {
         'content-type': 'application/json'
       },
-      body: JSON.stringify(newStatus)
+      body: JSON.stringify(newTask)
     })
       .then(res => res.json())
       .then(data => {
         console.log(data)
         form.reset()
         if (data?.insertedId) {
+          setAllTasks([newTask, ...allTasks])
           Swal.fire({
             title: 'Success!',
             text: 'Task added to the database!',
@@ -39,29 +49,19 @@ const App = () => {
   return (
     <>
       <h1 className='text-center my-8 text-2xl md:text-4xl font-medium'>Welcome to <span className='text-green-600'>Task Manager</span></h1>
-      <div className='grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3'>
-
-        <div className="card bg-base-100 shadow-xl border">
-          <div className="card-body">
-            <h2 className="card-title text-justify">This is my Task Title</h2>
-            <p>Lorem ipsum dolor sit amet consectetur adipisicing elit. Nulla eum esse qui perspiciatis accusantium adipisci repellendus, atque deserunt quo dolorem soluta alias doloremque voluptatem ullam dicta officia labore ad aspernatur suscipit amet. Excepturi omnis illo, numquam officiis recusandae voluptate natus ex, fugiat mollitia eaque qui. Id maiores ab quisquam provident consequatur. Dolorem quia tenetur excepturi labore expedita vel cupiditate porro corrupti, repellendus a! Nulla numquam tempora quis animi, modi totam odit molestias saepe error, porro, tenetur dolorem. Fuga, laudantium beatae! Voluptate neque expedita libero doloremque voluptatibus magnam vel architecto placeat aut, est eius molestiae quos. Unde natus possimus earum odit.</p>
-            <div>
-              <button className="btn-xs rounded-md bg-green-600">Approved</button>
-            </div>
-            <div>
-              <hr />
-              <button className="mt-4 rounded-md py-2 px-4 bg-yellow-400 me-4">Edit</button>
-              <button className="rounded-md py-2 px-4 bg-red-400">Delete</button>
-            </div>
-          </div>
-        </div>
-
-
-      </div>
+      {/* Add Task */}
       <div className='new-task' onClick={() => window.my_modal_1.showModal()}>
         <FaPlusCircle className='text-6xl mx-auto my-4'></FaPlusCircle>
         <h1>New Task</h1>
       </div>
+      <hr />
+      <h2 className='text-center my-8 text-2xl md:text-3xl font-semibold'>Your Previous tasks</h2>
+      <div className='grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4'>
+        {
+          allTasks.map(task => <SingleTask key={task._id} task={task}></SingleTask>)
+        }
+      </div>
+
 
 
 
