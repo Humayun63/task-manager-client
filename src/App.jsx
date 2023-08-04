@@ -46,6 +46,38 @@ const App = () => {
       })
   }
 
+  const handleDelete = id => {
+    Swal.fire({
+      title: 'Are you sure?',
+      text: "You won't be able to revert this!",
+      icon: 'warning',
+      showCancelButton: true,
+      confirmButtonColor: '#3085d6',
+      cancelButtonColor: '#d33',
+      confirmButtonText: 'Yes, delete it!'
+    }).then((result) => {
+      if (result?.isConfirmed) {
+        console.log(id);
+        fetch(`https://task-manager-server-murex.vercel.app/tasks/delete/${id}`, {
+          method: "DELETE"
+        })
+          .then(res => res.json())
+          .then(data => {
+            if (parseInt(data?.deletedCount) > 0) {
+              Swal.fire(
+                'Deleted!',
+                'Your task has been deleted.',
+                'success'
+              )
+              const remainingTasks = allTasks.filter(task => task._id !== id);
+              setAllTasks(remainingTasks)
+            }
+          })
+          .catch(error => console.log(error));
+      }
+    })
+  }
+
   return (
     <>
       <h1 className='text-center my-8 text-2xl md:text-4xl font-medium'>Welcome to <span className='text-green-600'>Task Manager</span></h1>
@@ -58,7 +90,7 @@ const App = () => {
       <h2 className='text-center my-8 text-2xl md:text-3xl font-semibold'>Your Previous tasks</h2>
       <div className='grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4'>
         {
-          allTasks.map(task => <SingleTask key={task._id} task={task}></SingleTask>)
+          allTasks.map(task => <SingleTask key={task._id} task={task} handleDelete={handleDelete}></SingleTask>)
         }
       </div>
 

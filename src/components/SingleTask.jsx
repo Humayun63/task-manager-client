@@ -1,7 +1,7 @@
 import React from 'react';
 
-const SingleTask = ({ task }) => {
-    const { title, description, status } = task || {}
+const SingleTask = ({ task, handleDelete }) => {
+    const {_id, title, description, status } = task || {}
     return (
         <div className="card bg-base-100 shadow-xl border">
             <div className="card-body">
@@ -13,7 +13,7 @@ const SingleTask = ({ task }) => {
                 <div>
                     <hr />
                     <button className="mt-4 rounded-md py-2 px-4 bg-yellow-400 me-4">Edit</button>
-                    <button className="rounded-md py-2 px-4 bg-red-400">Delete</button>
+                    <button className="rounded-md py-2 px-4 bg-red-400" onClick={() => handleDelete(_id)}>Delete</button>
                 </div>
             </div>
         </div>
